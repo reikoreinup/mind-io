@@ -12,7 +12,7 @@ badRooms = [];
 gameData = {};
 
 const port = 80;
-server.listen(process.env.PORT || port);
+server.listen(port);
 console.log("Server is running on port " + port);
 
 app.get('/', function (req, res) {
