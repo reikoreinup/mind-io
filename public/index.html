@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script language="javascript" src="/jquery/dist/jquery.js"></script>
+    <script language="javascript" src="/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css"/>
+</head>
+<body>
+<div id="loginArea">
+    <form id="userForm">
+        <div class="form-group w-25 mx-auto p-3">
+            <input class="form-control" id="username" placeholder="Your name"/>
+            <br>
+            <input type="submit" class="btn btn-primary" value="Enter">
+        </div>
+    </form>
+</div>
+<div id="chooseActionArea" class="container w-25 p-3">
+
+    <form id="joinGameForm">
+        <input type="text" class="form-control mx-auto" id="roomID" placeholder="RoomID">
+        <br>
+        <input type="submit" class="btn btn-primary mx-auto" id="joinGame" value="Go to room"/>
+    </form>
+    <button class="btn btn-secondary mx-auto m-1" id="backToLoginButton">Back</button>
+
+</div>
+<div id="waitingArea" class="container">
+    <h2 id="roomName"></h2>
+    <span>
+    <button id="startGameButton" class="btn btn-primary">Start game</button>
+    <button class="btn btn-danger mx-auto m-1" id="leaveRoomButton">Leave room</button>
+    </span>
+    <ul id="users" style="padding-left: 0">
+
+    </ul>
+
+</div>
+<div id="gameArea" class="container">
+    <h3 id="roundInfo"></h3>
+    <h2 id="lastCard"></h2>
+    <span class="number" id="currentCard">--</span>
+    <br>
+    <br>
+    <div id="otherNumbers">
+        <table id="otherPlayersTable">
+            <tr id="userNames">
+
+            </tr>
+            <tr id="amountOfCards">
+
+            </tr>
+        </table>
+    </div>
+    <br>
+    <p class="yourNumbers"></p>
+
+</div>
+<div id="overlay">
+    <div class="centered-text">
+        <div id="text"></div>
+        <button id="restartRoundButton" class="btn btn-primary">Try again!</button>
+    </div>
+</div>
+<div id="endOverlay">
+    <div class="centered-text">
+        <div id="textFinal"></div>
+        <button id="returnToLobbyButton" class="btn btn-danger">Return to lobby</button>
+    </div>
+</div>
+<div id="nextRoundOverlay">
+    <div class="centered-text">
+        <div id="textNextRound">You passed this round!</div>
+        <button id="nextRoundButton" class="btn btn-primary">Next round</button>
+    </div>
+</div>
+</body>
+
+
+</html>
