@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const server = require("http").createServer(app);
 const io = require("socket.io").listen(server);
 
-app.use(cors);
+// app.use(cors);
 app.use(express.static(__dirname + '/node_modules'));
 app.use(express.static(__dirname + '/public'));
 
@@ -14,8 +14,8 @@ connections = [];
 badRooms = [];
 gameData = {};
 
-const port = 6969;
-dotenv.config();
+const port = 80;
+// dotenv.config();
 server.listen(process.env.PORT || port);
 console.log("Server is running on port " + port);
 

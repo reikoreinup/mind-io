@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     var socket = io.connect();
     var strings = [
         " got ahead of themselves.",
