@@ -46,7 +46,7 @@ io.sockets.on('connection', function (socket) {
         if (!Object.keys(gameData).includes(room)) {
             socket.join(room);
             let usernamesInRoom = getUsersInRoom(room);
-            socket.emit('join room', {room: room, roomAvailable: true});
+            socket.emit('join room', {room: room, roomAvailable: true, numClients: usernamesInRoom.length});
             io.to(room).emit('user joined', usernamesInRoom);
         } else {
             socket.emit('join room', {room: room, roomAvailable: false});

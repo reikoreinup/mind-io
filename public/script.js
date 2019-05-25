@@ -90,12 +90,15 @@ $(document).ready(function () {
     socket.on("join room", function (data) {
         let room = data.room;
         let successful = data.roomAvailable;
-
+        let numClients = data.numClients;
 
         if (successful) {
             currentRoom = room;
             $("#chooseActionArea").hide();
             $("#waitingArea").show();
+            if (numClients < 2) { //Todo: not working???
+                $("#startGameButton").disable();
+            }
             $("#roomName").html("Room name: " + currentRoom);
         } else {
             alert("Can't join this room. Game in progress")
