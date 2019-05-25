@@ -123,6 +123,7 @@ $(document).ready(function () {
         let myNumbersContent = "";
         let othersNamesContent = "";
         let othersCardsContent = "";
+        $("#lastCard").html("");
 
         $("#waitingArea").hide();
         $("#gameArea").show();
