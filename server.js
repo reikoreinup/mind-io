@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const app = express();
+const dotenv = require('dotenv');
 const server = require("http").createServer(app);
 const io = require("socket.io").listen(server);
 
@@ -14,7 +15,7 @@ badRooms = [];
 gameData = {};
 
 const port = 6969;
-server.listen(port);
+server.listen(process.env.PORT || port);
 console.log("Server is running on port " + port);
 
 app.get('/', function (req, res) {
