@@ -1,9 +1,10 @@
 const express = require("express");
+const cors = require('cors');
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io").listen(server);
 
-
+app.use(cors);
 app.use(express.static(__dirname + '/node_modules'));
 app.use(express.static(__dirname + '/public'));
 
