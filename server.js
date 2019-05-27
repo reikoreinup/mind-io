@@ -14,7 +14,16 @@ gameData = {};
 const port = 80;
 server.listen(process.env.PORT || port);
 console.log("Server is running on port " + port);
-
+const knex = require('knex')({
+    client: 'pg',
+    connection: {
+        host: 'ec2-54-247-85-251.eu-west-1.compute.amazonaws.com',
+        user: 'ruhvdzuuojglwa',
+        password: '9ed3dea7f039090216c4106f450d62c3fad38b12388cf8b97ad0445d4d427224',
+        database: 'd3o31f5iv71tmq',
+        port: '5432'
+    }
+});
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "public/index.html")
 });
@@ -35,6 +44,9 @@ io.sockets.on('connection', function (socket) {
         if (!users.includes(data)) {
             socket.username = data;
             users.push(socket.username);
+            knex('users')
+                .insert({ username: socket.username,
+                            password: "test"});
             socket.emit("new user", true)
         } else {
             socket.emit("new user", false)
