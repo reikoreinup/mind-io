@@ -13,15 +13,39 @@ $(document).ready(function () {
     var round = 1;
     var lives = 4;
 
+    // $("#userForm").validate({
+    //     rules: {
+    //         username: {
+    //             required: true,
+    //             minlength: 2
+    //         },
+    //         password: {
+    //             required: true,
+    //             minlength: 8
+    //         }
+    //     }
+    // });
+
     $("#userForm").submit(function (e) {
-        e.preventDefault();
-        username = $("#username").val();
-        socket.emit("new user", username);
+        if ($('#password').val() === '' || $('#username').val() === '') {
+            e.preventDefault();
+            alert("Fields can't be empty!");
+        } else {
+            e.preventDefault();
+            username = $("#username").val();
+            socket.emit("new user", {username: username, password: $('#password').val()});
+        }
     });
 
+
     $("#joinGameForm").submit(function (e) {
-        e.preventDefault();
-        socket.emit("join room", $("#roomID").val());
+        if ($('#roomID').val() === '') {
+            e.preventDefault();
+            alert("RoomID can't be empty!");
+        } else {
+            e.preventDefault();
+            socket.emit("join room", $("#roomID").val());
+        }
     });
 
     $("#startGameButton").click(function (e) {
@@ -42,6 +66,7 @@ $(document).ready(function () {
         e.preventDefault();
         socket.emit("remove user", username);
         $("#username").val("");
+        $("#password").val("");
         $("#chooseActionArea").hide();
         $("#loginArea").show();
     });
@@ -83,7 +108,7 @@ $(document).ready(function () {
             $("#loginArea").hide();
             $("#chooseActionArea").show();
         } else {
-            alert("This name is taken! Choose another.")
+            alert("Username and password do not match!")
         }
     });
 
@@ -96,9 +121,7 @@ $(document).ready(function () {
             currentRoom = room;
             $("#chooseActionArea").hide();
             $("#waitingArea").show();
-            if (numClients < 2) { //Todo: not working???
-                $("#startGameButton").disable();
-            }
+            console.log(currentRoom);
             $("#roomName").html("Room name: " + currentRoom);
         } else {
             alert("Can't join this room. Game in progress")

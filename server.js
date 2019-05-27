@@ -21,7 +21,8 @@ const knex = require('knex')({
         user: 'ruhvdzuuojglwa',
         password: '9ed3dea7f039090216c4106f450d62c3fad38b12388cf8b97ad0445d4d427224',
         database: 'd3o31f5iv71tmq',
-        port: '5432'
+        port: '5432',
+        ssl: true
     }
 });
 app.get('/', function (req, res) {
@@ -41,146 +42,192 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('new user', function (data) {
-        if (!users.includes(data)) {
-            socket.username = data;
-            users.push(socket.username);
-            knex('users')
-                .insert({ username: socket.username,
-                            password: "test"});
-            socket.emit("new user", true)
-        } else {
-            socket.emit("new user", false)
-        }
+        let username = data.username;
+        let password = data.password;
+        userExists(username).then((result) => {
+            console.log("line 48, usernames:" + result);
+            if (result.length === 1) {
+                credentialsMatch(username, password).then((result) => {
+                    if (result.length === 1) {
+                        socket.username = username;
+                        users.push(socket.username);
+                        socket.emit("new user", true);
+                    } else {
+                        socket.emit("new user", false);
+                    }
+                })
 
-    });
-
-    socket.on('join room', function (room) {
-        if (!Object.keys(gameData).includes(room)) {
-            socket.join(room);
-            let usernamesInRoom = getUsersInRoom(room);
-            socket.emit('join room', {room: room, roomAvailable: true, numClients: usernamesInRoom.length});
-            io.to(room).emit('user joined', usernamesInRoom);
-        } else {
-            socket.emit('join room', {room: room, roomAvailable: false});
-        }
-    });
-
-    socket.on('game started', function (currentRoom) {
-
-        io.to(currentRoom).emit('game started');
-    });
-
-    socket.on('round started', function (data) {
-        let round = data.round;
-        let room = data.room;
-        let lives = data.lives;
-
-
-        let clients = io.sockets.adapter.rooms[room].sockets;
-        let numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
-
-        let numbers = dealNumbers(round, numClients);
-        gameData[room] = {currentNumbers: flatten(numbers), lives: lives};
-        console.log(gameData);
-        console.log(numbers);
-        console.log("round: " + round + "\nplayers: " + numClients);
-        let i = 0;
-
-        for (let clientId in clients) {
-            let clientSocket = io.sockets.connected[clientId];
-            clientSocket.emit('round started', {numbers: numbers[i], lives: lives, round: round, players: getUsersInRoom(room)});
-            i++;
-        }
-
-    });
-
-    socket.on('clicked number', function (data) {
-        let room = data.room;
-        let number = data.number;
-        let username = socket.username;
-
-        if (isSmallest(number, room)) {
-            io.to(room).emit('clicked number', {number: number, username: username, correct: true});
-            gameData[room]["currentNumbers"].splice(gameData[room]["currentNumbers"].indexOf(parseInt(number)), 1);
-            if (gameData[room]["currentNumbers"].length === 0) {
-                io.to(room).emit('next round');
-            }
-        } else {
-            io.to(room).emit('clicked number', {number: number, username: username, correct: false});
-            gameData[room].lives--;
-            console.log('remaining lives: ' + gameData[room].lives);
-            if (gameData[room].lives === 0) {
-                io.to(room).emit('game over', username);
             } else {
-                io.to(room).emit('retry', {username: username, lives: gameData[room].lives})
+                knex('users')
+                    .insert({
+                        username: username,
+                        password: password
+                    }).then((data) => console.log("userinfo insert successful"));
+                socket.username = username;
+                users.push(socket.username);
+                socket.emit("new user", true);
             }
-        }
-        socket.emit('remove from hand', number);
 
+        })
+            .catch((result) => console.log(result));
     });
 
 
-    socket.on('hide overlay', function (room) {
-        io.to(room).emit('hide overlay');
+        socket.on('join room', function (room) {
+            if (!Object.keys(gameData).includes(room)) {
+                socket.join(room);
+                let usernamesInRoom = getUsersInRoom(room);
+                socket.emit('join room', {room: room, roomAvailable: true, numClients: usernamesInRoom.length});
+                io.to(room).emit('user joined', usernamesInRoom);
+            } else {
+                socket.emit('join room', {room: room, roomAvailable: false});
+            }
+        });
+
+        socket.on('game started', function (currentRoom) {
+
+            io.to(currentRoom).emit('game started');
+        });
+
+        socket.on('round started', function (data) {
+            let round = data.round;
+            let room = data.room;
+            let lives = data.lives;
+
+
+            let clients = io.sockets.adapter.rooms[room].sockets;
+            let numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
+
+            let numbers = dealNumbers(round, numClients);
+            gameData[room] = {currentNumbers: flatten(numbers), lives: lives};
+            console.log(gameData);
+            console.log(numbers);
+            console.log("round: " + round + "\nplayers: " + numClients);
+            let i = 0;
+
+            for (let clientId in clients) {
+                let clientSocket = io.sockets.connected[clientId];
+                clientSocket.emit('round started', {
+                    numbers: numbers[i],
+                    lives: lives,
+                    round: round,
+                    players: getUsersInRoom(room)
+                });
+                i++;
+            }
+
+        });
+
+        socket.on('clicked number', function (data) {
+            let room = data.room;
+            let number = data.number;
+            let username = socket.username;
+
+            if (isSmallest(number, room)) {
+                io.to(room).emit('clicked number', {number: number, username: username, correct: true});
+                gameData[room]["currentNumbers"].splice(gameData[room]["currentNumbers"].indexOf(parseInt(number)), 1);
+                if (gameData[room]["currentNumbers"].length === 0) {
+                    io.to(room).emit('next round');
+                }
+            } else {
+                io.to(room).emit('clicked number', {number: number, username: username, correct: false});
+                gameData[room].lives--;
+                console.log('remaining lives: ' + gameData[room].lives);
+                if (gameData[room].lives === 0) {
+                    io.to(room).emit('game over', username);
+                } else {
+                    io.to(room).emit('retry', {username: username, lives: gameData[room].lives})
+                }
+            }
+            socket.emit('remove from hand', number);
+
+        });
+
+
+        socket.on('hide overlay', function (room) {
+            io.to(room).emit('hide overlay');
+        });
+
+        socket.on('clear game data', function (room) {
+            delete gameData[room];
+        });
+
+        socket.on('remove user', function (username) {
+            users.splice(users.indexOf(username), 1);
+        });
+
+        socket.on('leave room', function (room) {
+            socket.leave(room);
+            io.to(room).emit('user joined', getUsersInRoom(room));
+        })
+
+
     });
 
-    socket.on('clear game data', function (room) {
-        delete gameData[room];
-    });
+    function isSmallest(number, room) {
+        let numbers = gameData[room]["currentNumbers"];
+        let minNumber = Math.min(...numbers);
+        console.log("Clicked: " + number + "\nMinNumber: " + minNumber);
+        return minNumber === parseInt(number);
 
-    socket.on('remove user', function (username) {
-        users.splice(users.indexOf(username), 1);
-    });
-
-    socket.on('leave room', function (room) {
-        socket.leave(room);
-        io.to(room).emit('user joined', getUsersInRoom(room));
-    })
-
-
-});
-
-function isSmallest(number, room) {
-    let numbers = gameData[room]["currentNumbers"];
-    let minNumber = Math.min(...numbers);
-    console.log("Clicked: " + number + "\nMinNumber: " + minNumber);
-    return minNumber === parseInt(number);
-
-}
-
-function dealNumbers(round, amountOfPlayers) {
-    let allNumbers = [];
-    let result = [];
-    for (let i = 0; i < round * amountOfPlayers; i++) {
-        let num = Math.floor(Math.random() * 100) + 1;
-        while (allNumbers.includes(num)) {
-            num = Math.floor(Math.random() * 100) + 1;
-        }
-        allNumbers.push(num);
     }
-    for (let i = 0; i < allNumbers.length; i += round) {
-        result.push(allNumbers.slice(i, i + round))
-    }
 
-    return result;
-
-
-}
-
-function getUsersInRoom(room) {
-    try {
-        let clients = io.sockets.adapter.rooms[room].sockets;
-        let usernamesInRoom = [];
-        for (let clientID in clients) {
-            usernamesInRoom.push(io.sockets.connected[clientID].username);
+    function dealNumbers(round, amountOfPlayers) {
+        let allNumbers = [];
+        let result = [];
+        for (let i = 0; i < round * amountOfPlayers; i++) {
+            let num = Math.floor(Math.random() * 100) + 1;
+            while (allNumbers.includes(num)) {
+                num = Math.floor(Math.random() * 100) + 1;
+            }
+            allNumbers.push(num);
         }
-        return usernamesInRoom;
-    } catch (TypeError) {
-        return [];
-    }
-}
+        for (let i = 0; i < allNumbers.length; i += round) {
+            result.push(allNumbers.slice(i, i + round))
+        }
 
-function flatten(arr) {
-    return [].concat(...arr)
-}
+        return result;
+
+
+    }
+
+    function getUsersInRoom(room) {
+        try {
+            let clients = io.sockets.adapter.rooms[room].sockets;
+            let usernamesInRoom = [];
+            for (let clientID in clients) {
+                usernamesInRoom.push(io.sockets.connected[clientID].username);
+            }
+            return usernamesInRoom;
+        } catch (TypeError) {
+            return [];
+        }
+    }
+
+    function flatten(arr) {
+        return [].concat(...arr)
+    }
+
+    function userExists(username) {
+        return new Promise(function (resolve, reject) {
+            resolve(knex
+                .select("username")
+                .from("users")
+                .where("username", username));
+            reject("couldn't resolve promise")
+        })
+
+    }
+
+    function credentialsMatch(username, password) {
+        return new Promise(function (resolve) {
+            resolve(knex
+                .select("username", "password")
+                .from("users")
+                .where("username", username)
+                .andWhere("password", password));
+        })
+    }
+
+
 

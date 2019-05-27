@@ -5,6 +5,7 @@
     <title>MindGame</title>
     <script src="/socket.io/socket.io.js"></script>
     <script language="javascript" src="/jquery/dist/jquery.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script language="javascript" src="/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -15,10 +16,11 @@
 <div id="loginArea">
     <form id="userForm">
         <div class="form-group w-25 mx-auto p-3">
-            <input min="1" class="form-control" id="username" placeholder="Your name"/>
+            <input class="form-control" id="username" placeholder="Login"/>
+            <input type="password" class="form-control" id="password" placeholder="Password"/>
             <!--todo: min not working???-->
             <br>
-            <input type="submit" class="btn btn-primary" value="Enter">
+            <input type="submit" id="enterButton" class="btn btn-primary" value="Enter">
         </div>
     </form>
 </div>
@@ -39,7 +41,7 @@
     <button id="startGameButton" class="btn btn-primary">Start game</button>
     <button class="btn btn-danger mx-auto m-1" id="leaveRoomButton">Leave room</button>
     </span>
-    <ul id="users" style="padding-left: 0">
+    <ul id="users">
 
     </ul>
 
