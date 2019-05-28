@@ -244,6 +244,9 @@ $(document).ready(function () {
         let $usernameCards = $(`td.${username}`);
         let $originalText = $usernameCards.text();
         $usernameCards.text($originalText.slice(0, -2));
+        if ($usernameCards.text() === '') {
+            $usernameCards.html("<span style='opacity: 0;'>:)</span>");
+        }
     }
 
     function changeBodyColor() {

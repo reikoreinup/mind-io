@@ -81,7 +81,7 @@ io.sockets.on('connection', function (socket) {
             if (result.length === 1) {
                 roomHasNoGameInProgress(room).then((result) => {
                     if (result.length === 1) {
-                        addUserToUsersInGames(socket, room);
+                        // addUserToUsersInGames(socket, room);
                         socket.join(room);
                         let usernamesInRoom = getUsersInRoom(room);
                         socket.emit('join room', {room: room, roomAvailable: true, numClients: usernamesInRoom.length});
@@ -100,7 +100,7 @@ io.sockets.on('connection', function (socket) {
                         inprogress: false
                     }).then((data) => console.log("roominfo insert successful"));
 
-                addUserToUsersInGames(socket, room);
+                // addUserToUsersInGames(socket, room);
                 socket.join(room);
                 let usernamesInRoom = getUsersInRoom(room);
                 socket.emit('join room', {room: room, roomAvailable: true, numClients: usernamesInRoom.length});
