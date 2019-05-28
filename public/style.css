@@ -5,14 +5,12 @@
     }
 
     #gameArea {
-        padding-top: 10%;
         text-align: center;
     }
 
     #waitingArea, #chooseActionArea, #loginArea {
         text-align: center;
         width: 100%;
-        padding-top: 20%;
         overflow: hidden;
     }
 }
