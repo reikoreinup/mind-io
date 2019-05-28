@@ -72,7 +72,7 @@ $(document).ready(function () {
         $("#loginArea").show();
     });
 
-    $(".yourNumbers").on("click", ".numbers", function(e){
+    $(".yourNumbers").on("click", ".numbers", function (e) {
         let clickedNumber = $(e.target).text();
         socket.emit("clicked number", {room: currentRoom, number: clickedNumber})
     });
@@ -101,7 +101,6 @@ $(document).ready(function () {
         round++;
         socket.emit("round started", {round: round, lives: lives, room: currentRoom})
     });
-
 
 
     socket.on("new user", data => {
@@ -155,7 +154,7 @@ $(document).ready(function () {
         $("#waitingArea").hide();
         $("#gameArea").show();
         $("#currentCard").html("--").css("background-color", "white");
-        $("body").css("background-color", "rgb(0, 255, 0, 0.6)");
+        changeBodyColor();
         for (let i = 0; i < myNumbers.length; i++) {
             myNumbersContent += "<div class='numbers p-1 m-1'>" + myNumbers[i] + "</div>";
         }
@@ -164,7 +163,7 @@ $(document).ready(function () {
             if (players[i] !== username) {
                 let cardEmoji = " █";
                 othersNamesContent += "<th>" + players[i] + "</th>";
-                othersCardsContent += "<td class=" + players[i] +">" + cardEmoji.repeat(round)+ "</td>";
+                othersCardsContent += "<td class=" + players[i] + ">" + cardEmoji.repeat(round) + "</td>";
             }
         }
 
@@ -182,21 +181,22 @@ $(document).ready(function () {
         let correct = data.correct;
         let $currentCard = $("#currentCard");
         let numClients = data.numClients;
+        let cardsLeft = data.cardsLeft;
 
         $("#lastCard").html(username + ":");
 
-        $currentCard.fadeOut(80, function() {
+        $currentCard.fadeOut(80, function () {
             $(this).text(number).fadeIn(80);
         });
 
-        changeBodyColor(round, numClients);
+        changeBodyColor();
 
         removeCardIconByName(username);
         if (correct) {
             console.log(username + ": " + number + " -> correct number")
         } else {
             console.log(username + ": " + number + " -> wrong number");
-            $currentCard.css("background-color", "red" );
+            $("body").css("background", "linear-gradient(180deg, red, darkred, brown, orangered)");
         }
 
     });
@@ -205,7 +205,7 @@ $(document).ready(function () {
     socket.on("remove from hand", function (number) {
         $(".yourNumbers").children("div").each(function () {
             if (number === $(this).text()) {
-                $(this).animate({ opacity: 0.2 }, 100);
+                $(this).animate({opacity: 0.2}, 100);
             }
         });
     });
@@ -214,7 +214,7 @@ $(document).ready(function () {
         let username = data.username;
         lives = data.lives;
         $("#overlay").show();
-        $("#text").html(username + strings[Math.floor(Math.random()*strings.length)]);
+        $("#text").html(username + strings[Math.floor(Math.random() * strings.length)]);
     });
 
     socket.on("hide overlay", function () {
@@ -225,13 +225,13 @@ $(document).ready(function () {
 
     socket.on("game over", function (username) {
         $("#endOverlay").show();
-        $("#textFinal").html(username + strings[Math.floor(Math.random()*strings.length)] +
-        `\nYou reached round ${round}.`);
+        $("#textFinal").html(username + strings[Math.floor(Math.random() * strings.length)] +
+            `\nYou reached round ${round}.`);
 
     });
 
     socket.on("next round", function () {
-        $("body").css("background-color", "rgba(0, 255, 0, 1)");
+        $("body").css("background", "linear-gradient(180deg, lightgreen, green)");
         $("#nextRoundOverlay").show();
         if (round % 2 === 0) {
             $("#textNextRound").html("You passed this round! Have an extra life for the effort.");
@@ -243,29 +243,22 @@ $(document).ready(function () {
     function removeCardIconByName(username) {
         let $usernameCards = $(`td.${username}`);
         let $originalText = $usernameCards.text();
-        $usernameCards.text($originalText.slice(0,-2));
+        $usernameCards.text($originalText.slice(0, -2));
     }
 
-    function changeBodyColor(rounds, numClients) {
-        let totalCards = rounds * numClients;
-        let step = 255 / totalCards;
-        let currentColorsString = $("body").css("background-color");
-        let currentColors = getRGB(currentColorsString);
-        let newRed = currentColors.red + step;
-        let newGreen = currentColors.green - step;
+    function changeBodyColor() {
 
-        currentBodyColor = `rgba(${newRed}, ${newGreen}, ${currentColors.blue}, 1)`;
-        $("body").css("background-color", currentBodyColor)
+        $("body").css("background", `linear-gradient(
+        -45deg, 
+        ${getRandomRGB()}, 
+        ${getRandomRGB()},
+        ${getRandomRGB()})`);
+
 
     }
 
-    function getRGB(str){
-        let match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
-        return match ? {
-            red: match[1],
-            green: match[2],
-            blue: match[3]
-        } : {};
+    function getRandomRGB() {
+        return `rgb(${Math.random() * (256)}, ${Math.random() * (256)}, ${Math.random() * (256)})`;
     }
 
 

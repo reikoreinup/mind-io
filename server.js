@@ -149,13 +149,24 @@ io.sockets.on('connection', function (socket) {
         let username = socket.username;
 
         if (isSmallest(number, room)) {
-            io.to(room).emit('clicked number', {number: number, username: username, correct: true, numClients: getUsersInRoom(room).length});
+            io.to(room).emit('clicked number', {
+                number: number,
+                username: username,
+                correct: true,
+                numClients: getUsersInRoom(room).length,
+                cardsLeft: gameData[room]["currentNumbers"].length - 1
+            });
             gameData[room]["currentNumbers"].splice(gameData[room]["currentNumbers"].indexOf(parseInt(number)), 1);
             if (gameData[room]["currentNumbers"].length === 0) {
                 io.to(room).emit('next round');
             }
         } else {
-            io.to(room).emit('clicked number', {number: number, username: username, correct: false, numClients: getUsersInRoom(room).length});
+            io.to(room).emit('clicked number', {
+                number: number,
+                username: username,
+                correct: false,
+                numClients: getUsersInRoom(room).length
+            });
             gameData[room].lives--;
             console.log('remaining lives: ' + gameData[room].lives);
             if (gameData[room].lives === 0) {
