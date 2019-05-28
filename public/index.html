@@ -6,6 +6,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script language="javascript" src="/jquery/dist/jquery.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
     <script language="javascript" src="/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -15,28 +16,31 @@
 <body>
 <div id="loginArea">
     <form id="userForm">
-        <div class="form-group w-25 mx-auto p-3">
-            <input class="form-control" id="username" placeholder="Login"/>
-            <input type="password" class="form-control" id="password" placeholder="Password"/>
+        <div class="form-group mx-auto p-3">
+            <input class="form-control w-auto mb-1" id="username" placeholder="Login"/>
+            <input type="password" class="form-control w-auto mt-1" id="password" placeholder="Password"/>
             <!--todo: min not working???-->
             <br>
-            <input type="submit" id="enterButton" class="btn btn-primary" value="Enter">
+            <input type="submit" id="enterButton" class="btn btn-primary mx-auto" value="Log in">
         </div>
     </form>
 </div>
-<div id="chooseActionArea" class="container w-25 p-3">
+<div id="chooseActionArea">
 
     <form id="joinGameForm">
-        <input min="1" type="text" class="form-control mx-auto" id="roomID" placeholder="RoomID">
-        <!--todo: min not working???-->
-        <br>
-        <input type="submit" class="btn btn-primary mx-auto" id="joinGame" value="Go to room"/>
+        <div class="form-group mx-auto p-3">
+            <input type="text" class="form-control w-auto mb-1" id="roomID" placeholder="RoomID">
+            <br>
+            <input type="submit" class="btn btn-primary mx-auto" id="joinGame" value="Go to room"/>
+            <button class="btn btn-secondary mx-auto" id="backToLoginButton">Log out</button>
+        </div>
     </form>
-    <button class="btn btn-secondary mx-auto m-1" id="backToLoginButton">Back</button>
+
 
 </div>
 <div id="waitingArea" class="container">
-    <h2 id="roomName"></h2>
+    <span>Room name</span>
+    <h3 id="roomName"></h3>
     <span>
     <button id="startGameButton" class="btn btn-primary">Start game</button>
     <button class="btn btn-danger mx-auto m-1" id="leaveRoomButton">Leave room</button>
@@ -47,9 +51,12 @@
 
 </div>
 <div id="gameArea" class="container">
-    <h3 id="roundInfo"></h3>
-    <h2 id="lastCard"></h2>
-    <span class="number" id="currentCard">--</span>
+    <div id="info">
+        <span id="roundInfo"></span>
+        <span id="livesInfo"></span>
+    </div>
+    <div id="lastCard"></div>
+    <div class="number" id="currentCard">--</div>
     <br>
     <br>
     <div id="otherNumbers">

@@ -1,33 +1,60 @@
-#chooseActionArea {
-    display: none;
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: green;
+    text-align: center;
 }
 
-#waitingArea {
-    display: none;
+#waitingArea, #chooseActionArea, #loginArea {
     text-align: center;
+    width: 100%;
+    padding-top: 40%;
+    overflow: hidden;
 }
 
 #gameArea {
-    display: none;
+    padding-top: 20%;
     text-align: center;
 }
 
-.yourNumbers {
-    font-size: 6vw;
+#gameArea, #waitingArea, #chooseActionArea {
+    display: none;
 }
 
-.number {
-    border: 2px solid;
+#roomName {
+    background-color: lightgray;
     border-radius: .25rem;
 }
 
-#currentCard {
-    font-size: 10vw;
-    top: 50%;
-    left: 50%;
+.form-control {
+    margin: auto;
+    width: 80%;
 }
 
-#overlay, #endOverlay, #nextRoundOverlay{
+
+.number:hover {
+    cursor: default;
+}
+
+.numbers:hover {
+    cursor: pointer;
+}
+
+.numbers {
+    display: inline-block;
+    border: 1px solid;
+    font-size: 2em;
+    border-radius: 10px;
+    min-width: 20%;
+    margin: auto;
+    background-color: lightgray;
+}
+
+
+
+#overlay, #endOverlay, #nextRoundOverlay {
     position: fixed; /* Sit on top of the page content */
     display: none; /* Hidden by default */
     width: 100%; /* Full width (cover the whole page) */
@@ -36,18 +63,20 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-    cursor: pointer; /* Add a pointer on hover */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    cursor: default; /* Add a pointer on hover */
+    margin: auto;
+
 }
 
-.centered-text{
+.centered-text {
     position: absolute;
     top: 50%;
     left: 50%;
-    font-size: 50px;
+    font-size: 2em;
     color: white;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
 }
 
 #otherPlayersTable {
@@ -56,7 +85,68 @@
 
 #users {
     padding-left: 0;
-    width: 20%;
     margin: auto;
 }
+
+#qd {
+    opacity: 0;
+}
+
+#backToLoginButton, #joinGame {
+    margin: auto;
+}
+
+
+#userForm, #joinGameForm, #waitingArea, #gameArea, #overlay, #endOverlay, #nextRoundOverlay {
+    zoom: 4;
+}
+
+#username, #password, #enterButton, #roomID, #joinGame, #backToLoginButton,
+#startGameButton, #leaveRoomButton, #roomName, .namesList {
+    border-radius: 10px;
+}
+
+.namesList {
+    border: 1px solid rgba(0, 0, 0, .125);
+    display: block;
+    position: relative;
+    padding: .75rem 1.25rem;
+}
+
+
+#livesInfo {
+    left: 0;
+    position: fixed;
+    padding-left: 1vw;
+    background-image: linear-gradient(to right, rgba(0,0,0,0.5), rgba(255,0,0,0));
+    color: #FFFFFF;
+}
+
+
+#roundInfo {
+    right: 0;
+    position: fixed;
+    padding-right: 1vw;
+    background-image: linear-gradient(to right, rgba(255,0,0,0), rgba(0,0,0,0.5));
+    color: #FFFFFF;
+}
+
+#info {
+    height: 2em;
+}
+
+#lastCard {
+    font-size: .75em;
+    color: #FFFFFF;
+}
+
+#currentCard {
+    background-color: lightgreen;
+    border: 1px solid;
+    font-size: 4em;
+    border-radius: 10px;
+    width: 50%;
+    margin: auto;
+}
+
 

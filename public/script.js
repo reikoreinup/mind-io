@@ -12,6 +12,7 @@ $(document).ready(function () {
     var currentRoom;
     var round = 1;
     var lives = 4;
+    var currentBodyColor = '';
 
     // $("#userForm").validate({
     //     rules: {
@@ -71,7 +72,7 @@ $(document).ready(function () {
         $("#loginArea").show();
     });
 
-    $(".yourNumbers").on("click", ".number", function(e){
+    $(".yourNumbers").on("click", ".numbers", function(e){
         let clickedNumber = $(e.target).text();
         socket.emit("clicked number", {room: currentRoom, number: clickedNumber})
     });
@@ -122,7 +123,7 @@ $(document).ready(function () {
             $("#chooseActionArea").hide();
             $("#waitingArea").show();
             console.log(currentRoom);
-            $("#roomName").html("Room name: " + currentRoom);
+            $("#roomName").html(currentRoom);
         } else {
             alert("Can't join this room. Game in progress")
         }
@@ -133,7 +134,7 @@ $(document).ready(function () {
         $("#gameArea").hide();
         $("#waitingArea").show();
         for (let i = 0; i < usernames.length; i++) {
-            content += "<li class='list-group-item'>" + usernames[i] + "</li>"
+            content += "<li class='namesList'>" + usernames[i] + "</li>"
         }
         $("#users").html(content);
     });
@@ -149,24 +150,26 @@ $(document).ready(function () {
         let myNumbersContent = "";
         let othersNamesContent = "";
         let othersCardsContent = "";
-        $("#lastCard").html("");
+        $("#lastCard").html("<span id=\"qd\">:)</span>");
 
         $("#waitingArea").hide();
         $("#gameArea").show();
         $("#currentCard").html("--").css("background-color", "white");
+        $("body").css("background-color", "rgb(0, 255, 0, 0.6)");
         for (let i = 0; i < myNumbers.length; i++) {
-            myNumbersContent += "<span class='number p-1 m-1'>" + myNumbers[i] + "</span>";
+            myNumbersContent += "<div class='numbers p-1 m-1'>" + myNumbers[i] + "</div>";
         }
 
         for (let i = 0; i < players.length; i++) {
             if (players[i] !== username) {
-                let cardEmoji = "🎴";
+                let cardEmoji = " █";
                 othersNamesContent += "<th>" + players[i] + "</th>";
-                othersCardsContent += "<td>" + cardEmoji.repeat(round)+ "</td>";
+                othersCardsContent += "<td class=" + players[i] +">" + cardEmoji.repeat(round)+ "</td>";
             }
         }
 
-        $("#roundInfo").html(`Lives: ${lives}\nRound: ${round}`);
+        $("#roundInfo").html(`ROUND: ${round}`);
+        $("#livesInfo").html(`LIVES: ${lives}`);
         $(".yourNumbers").html(myNumbersContent);
         $("#amountOfCards").html(othersCardsContent);
         $("#userNames").html(othersNamesContent);
@@ -178,9 +181,16 @@ $(document).ready(function () {
         let username = data.username;
         let correct = data.correct;
         let $currentCard = $("#currentCard");
+        let numClients = data.numClients;
 
         $("#lastCard").html(username + ":");
-        $currentCard.html(number);
+
+        $currentCard.fadeOut(80, function() {
+            $(this).text(number).fadeIn(80);
+        });
+
+        changeBodyColor(round, numClients);
+
         removeCardIconByName(username);
         if (correct) {
             console.log(username + ": " + number + " -> correct number")
@@ -193,9 +203,9 @@ $(document).ready(function () {
 
 
     socket.on("remove from hand", function (number) {
-        $(".yourNumbers").children("span").each(function () {
+        $(".yourNumbers").children("div").each(function () {
             if (number === $(this).text()) {
-                $(this).remove()
+                $(this).animate({ opacity: 0.2 }, 100);
             }
         });
     });
@@ -221,6 +231,7 @@ $(document).ready(function () {
     });
 
     socket.on("next round", function () {
+        $("body").css("background-color", "rgba(0, 255, 0, 1)");
         $("#nextRoundOverlay").show();
         if (round % 2 === 0) {
             $("#textNextRound").html("You passed this round! Have an extra life for the effort.");
@@ -230,7 +241,32 @@ $(document).ready(function () {
     });
 
     function removeCardIconByName(username) {
+        let $usernameCards = $(`td.${username}`);
+        let $originalText = $usernameCards.text();
+        $usernameCards.text($originalText.slice(0,-2));
+    }
+
+    function changeBodyColor(rounds, numClients) {
+        let totalCards = rounds * numClients;
+        let step = 255 / totalCards;
+        let currentColorsString = $("body").css("background-color");
+        let currentColors = getRGB(currentColorsString);
+        let newRed = currentColors.red + step;
+        let newGreen = currentColors.green - step;
+
+        currentBodyColor = `rgba(${newRed}, ${newGreen}, ${currentColors.blue}, 1)`;
+        $("body").css("background-color", currentBodyColor)
 
     }
+
+    function getRGB(str){
+        let match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
+        return match ? {
+            red: match[1],
+            green: match[2],
+            blue: match[3]
+        } : {};
+    }
+
 
 });
