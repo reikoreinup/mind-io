@@ -67,7 +67,7 @@ body {
 }
 
 #gameArea {
-    padding-top: 20%;
+    padding-top: 15%;
     text-align: center;
 }
 
@@ -230,7 +230,7 @@ table tr:last-child td:last-child {
     margin: auto;
 }
 
-@media (min-width:801px) {
+@media (hover: hover) {
 
     #userForm, #joinGameForm, #waitingArea, #gameArea, #overlay, #endOverlay, #nextRoundOverlay {
         zoom: 1;
