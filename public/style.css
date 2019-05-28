@@ -3,6 +3,18 @@
     #userForm, #joinGameForm, #waitingArea, #gameArea, #overlay, #endOverlay, #nextRoundOverlay {
         zoom: 1;
     }
+
+    #gameArea {
+        padding-top: 10%;
+        text-align: center;
+    }
+
+    #waitingArea, #chooseActionArea, #loginArea {
+        text-align: center;
+        width: 100%;
+        padding-top: 20%;
+        overflow: hidden;
+    }
 }
 
 html{
@@ -135,6 +147,12 @@ body {
     color: white;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#text {
+    margin: auto
+;
 }
 
 #otherPlayersTable {
